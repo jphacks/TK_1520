@@ -1,8 +1,13 @@
 package com.tk20.tk20android;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -28,6 +33,20 @@ public class MainActivity extends WearableActivity {
     mContainerView = (BoxInsetLayout) findViewById(R.id.container);
     mTextView = (TextView) findViewById(R.id.text);
     mClockView = (TextView) findViewById(R.id.clock);
+
+    SensorManager manager = (SensorManager)getSystemService(SENSOR_SERVICE);
+    Sensor hSensor = manager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
+    manager.registerListener(new SensorEventListener() {
+      @Override
+      public void onSensorChanged(SensorEvent event) {
+        mTextView.setText("" + event.values[0]);
+      }
+
+      @Override
+      public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+      }
+    },hSensor,SensorManager.SENSOR_DELAY_NORMAL);
   }
 
   @Override
