@@ -30,6 +30,6 @@ public class MainActivity extends Activity {
         return true;
       }
     });
-    wv.loadUrl("http://hamanishi.orz.hm/");
+    wv.loadUrl("file:///android_asset/www/html/index.html");
   }
 }

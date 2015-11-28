@@ -24,7 +24,7 @@ function loaded(){
 		dir_x = gamma;
 		dir_y = beta;
 
-		var json = JSON.stringify({dir_x:dir_x, dir_y:dir_y});
+		var json = JSON.stringify({dir_x:dir_x.toString(), dir_y:dir_y.toString()});
 		socket_cotroller.emit('gyro', json);
 
 	}, true);
@@ -96,15 +96,15 @@ function loaded(){
 		horizontal_context.fill();
 
 		//check collision
-		var tx = vertical_ball_x + 50 + dir_x;
-		var ty = vertical_ball_y + 50 + dir_y;
-		if (0 < tx && tx < vertical_canvas_width ) { vertical_ball_x = tx; }
-		if (0 < ty && ty < vertical_canvas_height) { vertical_ball_y = ty; }
+		var vtx = vertical_ball_x  + dir_x;
+		var vty = vertical_ball_y  + dir_y;
+		if (0 < vtx && vtx < vertical_canvas_width ) { vertical_ball_x = vtx; }
+		if (0 < vty && vty < vertical_canvas_height) { vertical_ball_y = vty; }
 
-		var tx = horizontal_ball_x + 50 +  + dir_x;
-		var ty = horizontal_ball_y + 50 +  + dir_y;
+		var tx = horizontal_ball_x + dir_x;
+		var ty = horizontal_ball_y + dir_y;
 		if (0 < tx && tx < horizontal_canvas_width ) { horizontal_ball_x = tx; }
-		if (0 < ty && ty < horizontal_canvas_height) { horizontal_!ball_y = ty; }
+		if (0 < ty && ty < horizontal_canvas_height) { horizontal_ball_y = ty; }
 
 
 		$("#ball_position_vertical").empty();
