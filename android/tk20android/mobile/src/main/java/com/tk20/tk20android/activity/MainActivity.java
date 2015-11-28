@@ -15,6 +15,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 public class MainActivity extends Activity {
+  private static final String ASSET_HTML_PATH = "";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
