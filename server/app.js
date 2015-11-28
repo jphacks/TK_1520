@@ -30,22 +30,15 @@ server4api.listen(8081, function() {
 
 // socket wit socket.io 8080---------------------------------------------------
 io.sockets.on("connection", function (socket) {
-
-  // 接続開始カスタムイベント(接続元ユーザを保存し、他ユーザへ通知)
-  socket.on("connected", function () {
-    var msg = "connected!";
-    io.sockets.emit("publish", {value: msg});
-  });
-
-  // メッセージ送信カスタムイベント
-  socket.on("publish", function (data) {
-    io.sockets.emit("publish", {value:data.value});
-  });
-
-  // 接続終了組み込みイベント(接続元ユーザを削除し、他ユーザへ通知)
-  socket.on("disconnect", function () {
-    var msg = "disconnected!";
-    io.sockets.emit("publish", {value: msg});
+  // ジャイロを受け取る
+  socket.on("gyro", function (data) {
+    //io.sockets.emit("publish", {value:data.value});
+    var obj = JSON.parse(data);
+    var x = obj.dir_x;
+    var y = obj.dir_y;
+    //var z = data.dir_z;
+    console.log(x + ' '+ y);
+    //console.log(data);
   });
 });
 //------------------------------------------------------------------------------
