@@ -5,3 +5,4 @@
 .DS_Store
 /android/tk20android/build
 /android/tk20android/captures
+*.iml
