@@ -1,12 +1,12 @@
 //TODO(NatsukiHamanishi): This is a quick fix. ACCESS shoud be determined dynamically.
-var ACCESS ="http://localhost:1337";
+var ACCESS ="http://192.51.208.62:8080";
 //var ACCESS ="http://192.168.1.4:????;
 
 $(loaded);
 function loaded(){
 
-//    var socket_cotroller = io.connect(ACCESS + "/jairo");
-//    socket_cotroller.emit('cliant2server', dir_x);
+	//    var socket_cotroller = io.connect(ACCESS + "/connection");
+	var socket_cotroller = io.connect(ACCESS);
 
 	$("#title").append("<h1>奴隷</h1>");
 
@@ -20,8 +20,12 @@ function loaded(){
 		var beta = event2.beta; //x
 		var gamma = event2.gamma; //y
 		var alpha = event2.alpha; //z
+
 		dir_x = gamma;
 		dir_y = beta;
+
+		var json = JSON.stringify({dir_x:dir_x, dir_y:dir_y});
+		socket_cotroller.emit('gyro', json);
 
 	}, true);
 
