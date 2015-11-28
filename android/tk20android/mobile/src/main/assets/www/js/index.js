@@ -96,10 +96,16 @@ function loaded(){
 		horizontal_context.fill();
 
 		//check collision
-		var tx = vertical_ball_x + dir_x;
-		var ty = vertical_ball_y + dir_y;
+		var tx = vertical_ball_x + 50 + dir_x;
+		var ty = vertical_ball_y + 50 + dir_y;
 		if (0 < tx && tx < vertical_canvas_width ) { vertical_ball_x = tx; }
 		if (0 < ty && ty < vertical_canvas_height) { vertical_ball_y = ty; }
+
+		var tx = horizontal_ball_x + 50 +  + dir_x;
+		var ty = horizontal_ball_y + 50 +  + dir_y;
+		if (0 < tx && tx < horizontal_canvas_width ) { horizontal_ball_x = tx; }
+		if (0 < ty && ty < horizontal_canvas_height) { horizontal_!ball_y = ty; }
+
 
 		$("#ball_position_vertical").empty();
 		$("#ball_position_horizontal").empty();
