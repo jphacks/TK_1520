@@ -1,13 +1,17 @@
 //TODO(NatsukiHamanishi): This is a quick fix. ACCESS shoud be determined dynamically.
-var ACCESS ="http://192.51.208.62:8080";
+var ACCESS ="http://192.51.208.64:8080";
+var socket_cotroller = io.connect(ACCESS);
 //var ACCESS ="http://192.168.1.4:????;
 
 $(loaded);
+
+function setIp(ip) {
+    ACCESS = "http://" + ip + ":8080";
+    socket_cotroller = io.connect(ACCESS);
+}
+
 function loaded(){
-
 	//    var socket_cotroller = io.connect(ACCESS + "/connection");
-	var socket_cotroller = io.connect(ACCESS);
-
 	$("#title").append("<h1>奴隷</h1>");
 
 	window.addEventListener("devicemotion", function(event1){
