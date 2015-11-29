@@ -1,3 +1,4 @@
+require('epipebomb')()
 var restify = require('restify');
 var server4socket = require("http").createServer().listen(8080);
 var io = require("socket.io").listen(server4socket);
