@@ -5,19 +5,23 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
         android:id="@+id/container"
         tools:context=".MainActivity"
         tools:deviceIds="wear">
-
-    <TextView
-            android:id="@+id/text"
+    <LinearLayout
+            android:orientation="vertical"
             app:layout_box="all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/hello_world"/>
-
-    <Button android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/stopHeartButton"
-            android:text="@string/stopped_heart"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <TextView android:id="@+id/text"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/hello_world"/>
+        <Button android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/stopHeartButton"
+                android:text="@string/stopped_heart"
+                android:background="@color/light_grey"/>
+    </LinearLayout>
 </android.support.wearable.view.BoxInsetLayout>
