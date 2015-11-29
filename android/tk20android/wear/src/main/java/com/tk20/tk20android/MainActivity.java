@@ -72,12 +72,22 @@ public class MainActivity extends WearableActivity {
     SensorManager manager = (SensorManager)getSystemService(SENSOR_SERVICE);
     Sensor hSensor = manager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
     mListener = new SensorEventListener() {
+      long invalidValStartTime = -1;
+
       @Override
       public void onSensorChanged(SensorEvent event) {
         mTextView.setText("" + event.values[0]);
-        // Send notification in emergency case.
-        // Wearable.MessageApi.sendMessage(...
 
+        if (event.values[0] < 10) {
+          if (invalidValStartTime == -1) {
+            invalidValStartTime = System.currentTimeMillis();
+          }
+        } else {
+          invalidValStartTime = -1;
+        }
+        if (invalidValStartTime != -1 && System.currentTimeMillis() - invalidValStartTime > 20000) {
+          sendEmergencyCallRequest();
+        }
       }
 
       @Override
