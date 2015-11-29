@@ -5,6 +5,10 @@ var io = require("socket.io").listen(server4socket);
 var sumo = require('jumping-night-drone');
 var drone = sumo.createClient();
 
+// Twilio Credentials 
+var accountSid = process.env.SID; 
+var authToken = process.env.TOKEN; 
+
 drone.connect(function() {
   //console.log("connect!");
 
@@ -49,11 +53,20 @@ function move(req, res, next) {
 }
 
 function emergency(req, res, next) {
-  res.send('emergency');
-
-  var server4socket2Client = require("http").createServer().listen(8082);
-  var io2C = require("socket.io").listen(server4socket2Client);
-
+    var client = require('twilio')(accountSid, authToken); 
+    client.calls.create({
+        //FIXME : Hard-coded request
+	to: "+819066223991", 
+	from: "+819066223991", 
+	url: "http://hamanishi.orz.hm/twillio/twillio.xml",  
+	method: "GET",  
+	fallbackMethod: "GET",  
+	statusCallbackMethod: "GET",    
+	record: "false" 
+    }, function(err, call) { 
+	console.log(call.sid); 
+    });
+    res.send('emergency');
 }
 
 var server4api = restify.createServer();
