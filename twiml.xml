@@ -1,0 +1,4 @@
+<!-- Place this file in http server -->
+<Response>
+  <Say language=ja-jp voice=woman>緊急通報ですls</Say>
+</Response>
