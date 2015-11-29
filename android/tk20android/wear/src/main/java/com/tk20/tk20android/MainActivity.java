@@ -1,9 +1,15 @@
 package com.tk20.tk20android;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
+
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
@@ -23,7 +29,9 @@ public class MainActivity extends WearableActivity {
   private TextView mTextView;
   private TextView mClockView;
 
-  private SensorEventListener mListener = null;
+  private GoogleApiClient mClient;
+
+  private SensorEventListener mListener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +41,33 @@ public class MainActivity extends WearableActivity {
 
     mContainerView = (BoxInsetLayout) findViewById(R.id.container);
     mTextView = (TextView) findViewById(R.id.text);
-    mClockView = (TextView) findViewById(R.id.clock);
+    mClient = new GoogleApiClient.Builder(this)
+        .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+          // TODO: Do something.
+          @Override
+          public void onConnected(Bundle bundle) {
+
+          }
+
+          @Override
+          public void onConnectionSuspended(int i) {
+
+          }
+        })
+        .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+          @Override
+          public void onConnectionFailed(ConnectionResult connectionResult) {
+
+          }
+        })
+        .build();
+
+    findViewById(R.id.stopHeartButton).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        sendEmergencyCallRequest();
+      }
+    });
 
     SensorManager manager = (SensorManager)getSystemService(SENSOR_SERVICE);
     Sensor hSensor = manager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
@@ -87,14 +121,38 @@ public class MainActivity extends WearableActivity {
   }
 
   @Override
-  protected void onPause() {
-    super.onPause();
-    finish();
-  }
-
-  @Override
   protected void onDestroy() {
     ((SensorManager)getSystemService(SENSOR_SERVICE)).unregisterListener(mListener);
     super.onDestroy();
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    mClient.disconnect();
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    mClient.connect();
+  }
+
+  private void sendEmergencyCallRequest() {
+    new SendECallRequestTask().execute();
+  }
+
+  private class SendECallRequestTask extends AsyncTask<Void, Void, Void> {
+    final String MESSAGE = "EMERGENCY";
+    final String PATH = "/emergency";
+
+    @Override
+    protected Void doInBackground(Void... params) {
+      for (Node n : Wearable.NodeApi.getConnectedNodes(mClient).await().getNodes()) {
+        //TODO : Handle request.
+        Wearable.MessageApi.sendMessage(mClient, n.getId(), PATH, MESSAGE.getBytes());
+      }
+      return null;
+    }
   }
 }
