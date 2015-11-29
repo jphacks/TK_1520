@@ -1,9 +1,15 @@
 package com.tk20.tk20android;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
+
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
@@ -11,7 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+
 import java.util.Locale;
 
 public class MainActivity extends WearableActivity {
@@ -21,9 +27,10 @@ public class MainActivity extends WearableActivity {
 
   private BoxInsetLayout mContainerView;
   private TextView mTextView;
-  private TextView mClockView;
 
-  private SensorEventListener mListener = null;
+  private GoogleApiClient mClient;
+
+  private SensorEventListener mListener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +40,34 @@ public class MainActivity extends WearableActivity {
 
     mContainerView = (BoxInsetLayout) findViewById(R.id.container);
     mTextView = (TextView) findViewById(R.id.text);
-    mClockView = (TextView) findViewById(R.id.clock);
+    mClient = new GoogleApiClient.Builder(this)
+        .addApi(Wearable.API)
+        .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+          // TODO: Do something.
+          @Override
+          public void onConnected(Bundle bundle) {
+
+          }
+
+          @Override
+          public void onConnectionSuspended(int i) {
+
+          }
+        })
+        .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+          @Override
+          public void onConnectionFailed(ConnectionResult connectionResult) {
+
+          }
+        })
+        .build();
+
+    findViewById(R.id.stopHeartButton).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        sendEmergencyCallRequest();
+      }
+    });
 
     SensorManager manager = (SensorManager)getSystemService(SENSOR_SERVICE);
     Sensor hSensor = manager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
@@ -76,25 +110,45 @@ public class MainActivity extends WearableActivity {
     if (isAmbient()) {
       mContainerView.setBackgroundColor(getResources().getColor(android.R.color.black));
       mTextView.setTextColor(getResources().getColor(android.R.color.white));
-      mClockView.setVisibility(View.VISIBLE);
-
-      mClockView.setText(AMBIENT_DATE_FORMAT.format(new Date()));
     } else {
       mContainerView.setBackground(null);
       mTextView.setTextColor(getResources().getColor(android.R.color.black));
-      mClockView.setVisibility(View.GONE);
     }
-  }
-
-  @Override
-  protected void onPause() {
-    super.onPause();
-    finish();
   }
 
   @Override
   protected void onDestroy() {
     ((SensorManager)getSystemService(SENSOR_SERVICE)).unregisterListener(mListener);
     super.onDestroy();
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    mClient.disconnect();
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    mClient.connect();
+  }
+
+  private void sendEmergencyCallRequest() {
+    new SendECallRequestTask().execute();
+  }
+
+  private class SendECallRequestTask extends AsyncTask<Void, Void, Void> {
+    final String MESSAGE = "EMERGENCY";
+    final String PATH = "/emergency";
+
+    @Override
+    protected Void doInBackground(Void... params) {
+      for (Node n : Wearable.NodeApi.getConnectedNodes(mClient).await().getNodes()) {
+        //TODO : Handle request.
+        Wearable.MessageApi.sendMessage(mClient, n.getId(), PATH, MESSAGE.getBytes());
+      }
+      return null;
+    }
   }
 }
