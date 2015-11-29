@@ -7,7 +7,6 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -24,6 +23,8 @@ public class MainActivity extends WearableActivity {
   private TextView mTextView;
   private TextView mClockView;
 
+  private SensorEventListener mListener = null;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -36,17 +37,21 @@ public class MainActivity extends WearableActivity {
 
     SensorManager manager = (SensorManager)getSystemService(SENSOR_SERVICE);
     Sensor hSensor = manager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
-    manager.registerListener(new SensorEventListener() {
+    mListener = new SensorEventListener() {
       @Override
       public void onSensorChanged(SensorEvent event) {
         mTextView.setText("" + event.values[0]);
+        // Send notification in emergency case.
+        // Wearable.MessageApi.sendMessage(...
+
       }
 
       @Override
       public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
       }
-    },hSensor,SensorManager.SENSOR_DELAY_NORMAL);
+    };
+    manager.registerListener(mListener, hSensor, SensorManager.SENSOR_DELAY_NORMAL);
   }
 
   @Override
@@ -79,5 +84,17 @@ public class MainActivity extends WearableActivity {
       mTextView.setTextColor(getResources().getColor(android.R.color.black));
       mClockView.setVisibility(View.GONE);
     }
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    finish();
+  }
+
+  @Override
+  protected void onDestroy() {
+    ((SensorManager)getSystemService(SENSOR_SERVICE)).unregisterListener(mListener);
+    super.onDestroy();
   }
 }
