@@ -17,7 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+
 import java.util.Locale;
 
 public class MainActivity extends WearableActivity {
@@ -27,7 +27,6 @@ public class MainActivity extends WearableActivity {
 
   private BoxInsetLayout mContainerView;
   private TextView mTextView;
-  private TextView mClockView;
 
   private GoogleApiClient mClient;
 
@@ -42,6 +41,7 @@ public class MainActivity extends WearableActivity {
     mContainerView = (BoxInsetLayout) findViewById(R.id.container);
     mTextView = (TextView) findViewById(R.id.text);
     mClient = new GoogleApiClient.Builder(this)
+        .addApi(Wearable.API)
         .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
           // TODO: Do something.
           @Override
@@ -110,13 +110,9 @@ public class MainActivity extends WearableActivity {
     if (isAmbient()) {
       mContainerView.setBackgroundColor(getResources().getColor(android.R.color.black));
       mTextView.setTextColor(getResources().getColor(android.R.color.white));
-      mClockView.setVisibility(View.VISIBLE);
-
-      mClockView.setText(AMBIENT_DATE_FORMAT.format(new Date()));
     } else {
       mContainerView.setBackground(null);
       mTextView.setTextColor(getResources().getColor(android.R.color.black));
-      mClockView.setVisibility(View.GONE);
     }
   }
 
