@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Tk20android</string>
+    <string name="endpoint">http://%1$s:%2$d/emergency</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+</resources>

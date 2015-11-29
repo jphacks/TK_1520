@@ -1,0 +1,8 @@
+.gradle
+/android/tk20android/local.properties
+/android/tk20android/.idea/workspace.xml
+/android/tk20android/.idea/libraries
+.DS_Store
+/android/tk20android/build
+/android/tk20android/captures
+*.iml
