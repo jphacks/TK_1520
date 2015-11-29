@@ -7,7 +7,9 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Xml;
 import android.view.View;
 import android.webkit.WebView;
@@ -17,8 +19,19 @@ import android.widget.Toast;
 
 import com.tk20.tk20android.R;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+
 public class MainActivity extends Activity {
-  private static final String ASSET_HTML_PATH = "";
+  private static final String ASSET_HTML_PATH = "file:///android_asset/www/html/index.html";
+
+  private String mHostName = "192.51.208.64";
+  private int ENDPOINT_PORT = 8081;
+
   private MessageApi.MessageListener mListener;
   private GoogleApiClient mClient;
 
@@ -35,13 +48,14 @@ public class MainActivity extends Activity {
         return true;
       }
     });
-    wv.loadUrl("file:///android_asset/www/html/index.html");
+    wv.loadUrl(ASSET_HTML_PATH);
     final EditText et = (EditText) findViewById(R.id.ipEdit);
 
     findViewById(R.id.ipButton).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         wv.loadUrl("javascript:setIp(\"" + et.getText().toString() + "\");");
+        mHostName = et.getText().toString();
       }
     });
 
@@ -72,6 +86,37 @@ public class MainActivity extends Activity {
       public void onMessageReceived(MessageEvent messageEvent) {
         Toast.makeText(MainActivity.this, new String(messageEvent.getData()),Toast.LENGTH_LONG)
             .show();
+
+        new AsyncTask<Void, Void, Void>() {
+          String TAG = "ApiRequestTask";
+
+          @Override
+          protected Void doInBackground(Void... params) {
+            HttpURLConnection connection = null;
+            InputStream is = null;
+            String url = getString(R.string.endpoint, mHostName, ENDPOINT_PORT);
+            try {
+              connection = (HttpURLConnection) new URL(url).openConnection();
+              connection.setRequestMethod("GET");
+              connection.connect();
+              is = connection.getInputStream();
+            } catch (IOException e) {
+              e.printStackTrace();
+            } finally {
+              try {
+                if (is != null) {
+                  is.close();
+                }
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
+              if (connection != null) {
+                connection.disconnect();
+              }
+            }
+            return null;
+          }
+        }.execute();
       }
     };
 
